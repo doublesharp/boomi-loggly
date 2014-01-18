@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+    <!-- Copyright (c) 2008 Boomi, Inc. -->
+    
+    <xs:element name="GenericConnector">
+        <xs:annotation>
+            <xs:appinfo>
+                <jxb:class name="GenericConnectorConfig"/>
+            </xs:appinfo>
+            <xs:documentation xml:lang="en">
+                Basic information necessary to load this connector package in the Atom.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="connectorClassName" type="xs:string">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <jxb:property><jxb:javadoc>
+                                Name of the class which implements the com.boomi.connector.api.Connector class for
+                                this connector package.
+                            </jxb:javadoc></jxb:property>
+                        </xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="sdkApiVersion" type="xs:string" default="1.0.0">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <jxb:property><jxb:javadoc>
+                            Optional version of the Connector SDK API with which this connector implementation is
+                            compatible, defaults to {@code "1.0.0"}.
+                        </jxb:javadoc></jxb:property>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

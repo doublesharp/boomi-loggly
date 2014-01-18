@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+
+    <!-- Copyright (c) 2008 Boomi, Inc. -->
+
+    <xs:complexType name="GenericField">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string"/>
+        <xs:attribute name="type" type="DataTypeConfig" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="DataTypeConfig">
+        <xs:annotation>
+            <xs:appinfo>
+                <jxb:typesafeEnumClass>
+                    <jxb:javadoc>
+                        The types of data supported for connector field values.  All of these types correspond to
+                        their XML Schema conterparts (except for password, which is basically just a string).
+                    </jxb:javadoc>
+                    <jxb:typesafeEnumMember name="STRING" value="string">
+                        <jxb:javadoc>
+                            Any arbitrary text string.  Data will be of type String.
+                        </jxb:javadoc>
+                    </jxb:typesafeEnumMember>
+                    <jxb:typesafeEnumMember name="PASSWORD" value="password">
+                        <jxb:javadoc>
+                            Any arbitrary text string (but UI may treat differently).  Data will be of type String.
+                            Also, all password values will be stored encrypted throughout the system, so this type is
+                            useful for any sensitive information.
+                        </jxb:javadoc>
+                    </jxb:typesafeEnumMember>
+                    <jxb:typesafeEnumMember name="BOOLEAN" value="boolean">
+                        <jxb:javadoc>
+                            A boolean value.  Data will be of type Boolean.
+                        </jxb:javadoc>
+                    </jxb:typesafeEnumMember>
+                    <jxb:typesafeEnumMember name="INTEGER" value="integer">
+                        <jxb:javadoc>
+                            An integral value.  Data will be of type Long.
+                        </jxb:javadoc>
+                    </jxb:typesafeEnumMember>
+                </jxb:typesafeEnumClass>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="password"/>
+            <xs:enumeration value="boolean"/>
+            <xs:enumeration value="integer"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

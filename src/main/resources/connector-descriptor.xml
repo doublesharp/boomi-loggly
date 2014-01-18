@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<GenericConnectorDescriptor
+    browsingType="any"
+    requireConnectionForBrowse="false">
+    <field id="token" label="Token" type="string">
+        <helpText>Your Loggly.com Access Token</helpText>
+        <defaultValue></defaultValue>
+    </field>
+    <field id="disable" label="Disable Logging" type="boolean">
+        <helpText>Disable all logging calls from this connector to Loggly.com</helpText>
+        <defaultValue>false</defaultValue>
+    </field>
+    <field id="tojson" label="XML to JSON?" type="boolean">
+        <helpText>Attempt to convert XML data to JSON. If "true", overrides operation settings.</helpText>
+        <defaultValue>false</defaultValue>
+    </field>
+    <field type="boolean" id="leveltag" label="Tag with log level?">
+    	<helpText>Use the current log level of the operation as a tag.</helpText>
+    	<defaultValue>true</defaultValue>
+    </field>
+    <field id="loglevel" label="Log Level" type="string">
+        <helpText>The logging level of this connector.</helpText>
+        <defaultValue>DEBUG</defaultValue>
+        <allowedValue label="DEBUG">
+        	<value>DEBUG</value>
+        </allowedValue>
+        <allowedValue label="INFO">
+        	<value>INFO</value>
+        </allowedValue>
+        <allowedValue label="WARN">
+        	<value>WARN</value>
+        </allowedValue>
+        <allowedValue label="ERROR">
+        	<value>ERROR</value>
+        </allowedValue>
+    </field>
+    <operation types="CREATE">
+        <field id="tojson" label="To JSON" type="boolean">
+            <helpText>Attempt to convert XML data to JSON</helpText>
+            <defaultValue>false</defaultValue>
+        </field>
+        <field id="passthrough" label="Data Passthrough" type="boolean">
+            <helpText>Pass input data through connector in lieu of log request result.</helpText>
+            <defaultValue>true</defaultValue>
+        </field>  
+	    <field id="loglevel" label="Log Level" type="string">
+	        <helpText>The log level of this operation. If it is lower than the connection log level no logging will occur.</helpText>
+	        <defaultValue>DEBUG</defaultValue>
+	        <allowedValue label="DEBUG">
+	        	<value>DEBUG</value>
+	        </allowedValue>
+	        <allowedValue label="INFO">
+	        	<value>INFO</value>
+	        </allowedValue>
+	        <allowedValue label="WARN">
+	        	<value>WARN</value>
+	        </allowedValue>
+	        <allowedValue label="ERROR">
+	        	<value>ERROR</value>
+	        </allowedValue>
+	    </field>
+        <field id="tags" label="Tags" type="string">
+            <helpText>Comma separated list of tags for this entry.</helpText>
+            <defaultValue></defaultValue>
+        </field>
+    </operation>
+</GenericConnectorDescriptor>
