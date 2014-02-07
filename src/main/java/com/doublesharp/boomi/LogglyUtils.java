@@ -1,10 +1,13 @@
 package com.doublesharp.boomi;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
@@ -98,6 +101,10 @@ public abstract class LogglyUtils {
 
 		return sb.toString();
 	}
+	
+	public static InputStream getInputStreamFromString(String string){
+		return new ByteArrayInputStream(string.getBytes());
+	}
 
 	// remove "extra" data from xml, used for converting to JSON
 	public static String removeXmlStringNamespaceAndPreamble(String xmlString) {
@@ -105,5 +112,11 @@ public abstract class LogglyUtils {
 		.replaceAll("\\s?xmlns.*?(\"|\').*?(\"|\')", "") 	// remove xmlns declaration
 		.replaceAll("(<)(\\w+:)(.*?>)", "$1$3") 			// remove opening tag prefix
 		.replaceAll("(</)(\\w+:)(.*?>)", "$1$3"); 			// remove closing tags prefix
+	}
+	
+	public static String getStackTrace(Throwable t) {
+	    StringWriter sw = new StringWriter();
+	    t.printStackTrace(new PrintWriter(sw));
+	    return sw.toString();
 	}
 }

@@ -34,7 +34,23 @@
         	<value>ERROR</value>
         </allowedValue>
     </field>
-    <operation types="CREATE">
+    <operation types="CREATE"> 
+	    <field id="sequence" label="Log Sequence" type="string">
+	        <helpText>Use this flag to add timing to the logs.</helpText>
+	        <defaultValue></defaultValue>
+	        <allowedValue label="START">
+	        	<value>START</value>
+	        </allowedValue>
+	        <allowedValue label="TICK">
+	        	<value>"TICK"</value>
+	        </allowedValue>
+	        <allowedValue label="END">
+	        	<value>END</value>
+	        </allowedValue>
+	        <allowedValue label="ERROR">
+	        	<value>ERROR</value>
+	        </allowedValue>
+	    </field>
         <field id="tojson" label="To JSON" type="boolean">
             <helpText>Attempt to convert XML data to JSON</helpText>
             <defaultValue>false</defaultValue>
@@ -61,6 +77,14 @@
 	    </field>
         <field id="tags" label="Tags" type="string">
             <helpText>Comma separated list of tags for this entry.</helpText>
+            <defaultValue></defaultValue>
+        </field>
+        <field id="processproperties" label="Process Properties" type="string">
+            <helpText>Comma separated list of property=componentId:key values for this entry.</helpText>
+            <defaultValue></defaultValue>
+        </field>
+        <field id="dynamicproperties" label="Dynamic Process Properties" type="string">
+            <helpText>Comma separated list of dynamic properties for this entry.</helpText>
             <defaultValue></defaultValue>
         </field>
     </operation>

@@ -4,7 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +22,9 @@ import com.boomi.connector.api.PropertyMap;
 import com.boomi.connector.api.ResponseUtil;
 import com.boomi.connector.api.UpdateRequest;
 import com.boomi.connector.util.BaseUpdateOperation;
+import com.boomi.execution.ExecutionManager;
+import com.boomi.execution.ExecutionTask;
+import com.boomi.execution.ExecutionUtil;
 import com.boomi.util.IOUtil;
 
 public class LogglyCreateOperation extends BaseUpdateOperation {
@@ -28,9 +36,11 @@ public class LogglyCreateOperation extends BaseUpdateOperation {
 
 	// properties which users can use to change for the Loggly operation
 	protected static final String TAGS_PROPERTY = "tags";
-	protected static final String ASYNC_PROPERTY = "async";
 	protected static final String PASSTHROUGH_PROPERTY = "passthrough";
 	protected static final String LOGLEVEL_PROPERTY = "loglevel";
+	protected static final String SEQUENCE_PROPERTY = "sequence";
+	protected static final String PROCESS_PROPERTIES_PROPERTY = "processproperties";
+	protected static final String DYNAMIC_PROPERTIES_PROPERTY = "dynamicproperties";
 	protected static final String TOJSON_PROPERTY = "tojson";
 
 	// default values for the properties
@@ -38,12 +48,19 @@ public class LogglyCreateOperation extends BaseUpdateOperation {
 	private static final boolean DEFAULT_PASSTHROUGH = true;
 	private static final String DEFAULT_LOGLEVEL = LogglyUtils.DEBUG;
 	private static final boolean DEFAULT_TOJSON = false;
+	private static final String DEFAULT_SEQUENCE = "START";
+	private static final String DEFAULT_PROPERTIES = "";
 
+	private static Map<String,Long> ticks = new HashMap<String,Long>();
+	
 	// we might append data to this variable
 	private String tags;
 
 	// final
 	private final boolean _passthrough;
+	private final String _sequence;
+	private final String _processProperties;
+	private final String _dynamicProperties;
 	private final String _logLevel;
 	private final boolean _toJson;
 
@@ -55,18 +72,20 @@ public class LogglyCreateOperation extends BaseUpdateOperation {
 		_passthrough = props.getBooleanProperty(PASSTHROUGH_PROPERTY, DEFAULT_PASSTHROUGH);
 		_logLevel = props.getProperty(LOGLEVEL_PROPERTY, DEFAULT_LOGLEVEL);
 		_toJson = props.getBooleanProperty(TOJSON_PROPERTY, DEFAULT_TOJSON);
+		_sequence = props.getProperty(SEQUENCE_PROPERTY, DEFAULT_SEQUENCE);
+		_processProperties = props.getProperty(PROCESS_PROPERTIES_PROPERTY, DEFAULT_PROPERTIES);
+		_dynamicProperties = props.getProperty(DYNAMIC_PROPERTIES_PROPERTY, DEFAULT_PROPERTIES);
 	}
 
 	@Override
 	protected void executeUpdate(UpdateRequest request, OperationResponse response) {
-		Logger logger = response.getLogger();
-		LogglyConnection connection = getConnection();
-		// Add the log level to our tags
+		final Logger logger = response.getLogger();
+		final LogglyConnection connection = getConnection();
+		// Add the sequence tag
+		addTag(_sequence);
+		// Add the log level tag
 		if (connection._levelTag) {
-			if (tags.trim() == "")
-				tags = _logLevel;
-			else
-				tags += "," + _logLevel;
+			addTag(_logLevel);
 		}
 		for (ObjectData input : request) {
 			try {
@@ -106,29 +125,120 @@ public class LogglyCreateOperation extends BaseUpdateOperation {
 					// If there is no resp, get one from Loggly
 					if (resp == null) {
 						// Try to convert XML to JSON
+						JSONObject xmlJSONObj = null;
 						if (_toJson || connection._toJson) {
 							try {
 								logger.log(Level.INFO, "Convert XML to JSON");
 								String text = LogglyUtils.getStringFromInputStream(is1);
 								text = LogglyUtils.removeXmlStringNamespaceAndPreamble(text);
-								JSONObject xmlJSONObj = XML.toJSONObject(text);
+								xmlJSONObj = XML.toJSONObject(text);
 
-								xmlJSONObj.put("timeStamp", Calendar.getInstance().getTimeInMillis());
+								Calendar now = Calendar.getInstance();
+								TimeZone tz = TimeZone.getTimeZone("UTC");
+								DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+								df.setTimeZone(tz);	
+								
+								JSONObject boomi = new JSONObject();
+								
+								boomi.put("timestamp", df.format(now.getTime()));
 
+								String processName = ExecutionManager.getCurrent().getProcessName();
+								boomi.put("processName", processName);
+
+								ExecutionTask task = ExecutionManager.getCurrent();
+								
+								String topLevelProcessId = task.getTopLevelProcessId();
+								boomi.put("topLevelProcessId", topLevelProcessId);
+								
+								String componentId = task.getTopLevelComponentId();
+								while (task!=null && !task.getComponentId().equals(componentId)){
+									task = task.getParent();
+								}
+								if (task!=null){
+									String parentProcessName = task.getProcessName();
+									boomi.put("parentProcessName", parentProcessName);
+								}
+
+								String atomID = ExecutionUtil.getContainerId();
+								boomi.put("atomId", atomID);
+
+								String executionId = ExecutionManager.getCurrent().getExecutionId();
+								boomi.put("executionId", executionId);
+								
+								String topLevelExecutionId = ExecutionManager.getCurrent().getTopLevelExecutionId();
+								boomi.put("topLevelExecutionId", topLevelExecutionId);
+
+								JSONObject jsonProperties = new JSONObject();
+								
+								// set dynamic process properties to json
+								JSONObject dynamicProperties = new JSONObject();
+								for (String property : _dynamicProperties.split(",")){
+									property = property.trim();
+									String propValue = ExecutionUtil.getDynamicProcessProperty(property);
+									if (propValue==null){
+										input.getUserDefinedProperties().get(property);
+										if (propValue==null) propValue = "";
+									}
+									dynamicProperties.put(property, propValue);
+								}
+								jsonProperties.put("dynamic", dynamicProperties);
+								
+								// set process properties to json
+								JSONObject processProperties = new JSONObject();
+								for (String entries : _processProperties.split(",")){
+									try {
+										String[] entry = entries.split("=");
+										String property = entry[0];
+										String[] pair = entry[1].split(":");
+										String id = pair[0].trim();
+										String key = pair[1].trim();
+										
+										String propValue = ExecutionUtil.getProcessProperty(id, key);
+										if (propValue==null) propValue = "null";
+										processProperties.put(property, propValue);
+									} catch (Exception e){
+										logger.log(Level.SEVERE, LogglyUtils.getStackTrace(e));
+									}
+								}
+								jsonProperties.put("process", processProperties);
+								
+								boomi.put("properties", jsonProperties);
+
+								long nowMillis = now.getTimeInMillis();
+								
+								// try to get the start time from the cache
+								Long startMillisObj = ticks.get(executionId);
+								long startMillis = (startMillisObj==null)? nowMillis : startMillisObj;
+
+								// cache a start tick
+								if ("START".equals(_sequence)){
+									ticks.put(executionId, nowMillis);
+								} else 
+								// put a tick into the log
+								if ("TICK".equals(_sequence)){
+									boomi.put("boomiTickTime", nowMillis-startMillis);
+								} else {
+									// anything else "error" or "end" will remove it from the Map. error on side of remove.
+									boomi.put("boomiExecutionTime", nowMillis-startMillis);
+									ticks.remove(executionId);
+								}
+								
+								xmlJSONObj.put("boomi", boomi);
+								
 								String jsonPrettyPrintString = xmlJSONObj.toString(4);
-								is1 = new ByteArrayInputStream(jsonPrettyPrintString.getBytes());
+								is1 = LogglyUtils.getInputStreamFromString(jsonPrettyPrintString);
 							} catch (Exception e) {
-								logger.log(Level.WARNING, e.getMessage());
+								
+								logger.log(Level.SEVERE, LogglyUtils.getStackTrace(e));
 							}
+							
 						}
-
 						// Construct a URL including our token
-						URL url = LogglyUtils.buildUrl(connection._baseUrl);
+						final URL url = LogglyUtils.buildUrl(connection._baseUrl);
 						logger.log(Level.INFO, "POST: " + url + "\nTAGS: " + tags);
-
+						
 						// Send to Loggly
 						resp = new LogglyResponse(LogglyUtils.send(url, POST_METHOD, PLAIN_CONTENT_TYPE, is1, tags));
-
 						String msgComplete = "Loggly.com complete: " + resp.getResponseCode() + " " + resp.getResponseMessage();
 						input.getLogger().log(Level.INFO, msgComplete);
 						logger.log(Level.INFO, msgComplete);
@@ -156,6 +266,13 @@ public class LogglyCreateOperation extends BaseUpdateOperation {
 		}
 	}
 
+	private void addTag(String tag){
+		if (tags.trim() == "")
+			tags = tag;
+		else
+			tags += "," + tag;
+	}
+	
 	@Override
 	public LogglyConnection getConnection() {
 		return (LogglyConnection) super.getConnection();
