@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.boomi.util.IOUtil;
 import com.boomi.util.StreamUtil;
@@ -77,7 +78,7 @@ public abstract class LogglyUtils {
 	}
 
 	// convert InputStream to String
-	public static String getStringFromInputStream(InputStream is) {
+	public static String getStringFromInputStream(InputStream is, Logger logger) {
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
 
@@ -88,6 +89,7 @@ public abstract class LogglyUtils {
 				sb.append(line);
 			}
 		} catch (IOException e) {
+			if (logger!=null) logger.severe("Loggly.com: Cannot get text from stream - " + getStackTrace(e));
 			e.printStackTrace();
 		} finally {
 			if (br != null) {

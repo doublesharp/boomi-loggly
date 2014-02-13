@@ -1,12 +1,18 @@
 package com.doublesharp.boomi;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.json.JSONObject;
-import org.json.XML;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import com.boomi.connector.api.OperationType;
+import com.boomi.connector.testutil.ConnectorTester;
+import com.boomi.connector.testutil.SimpleOperationResult;
 
 
 @RunWith(JUnit4.class)
@@ -16,7 +22,6 @@ public class LogglyConnectorTest {
 	@Test
     public void testCreateOperation() throws Exception
     {
-		/*
         LogglyConnector connector = new LogglyConnector();  
       
         ConnectorTester tester = new ConnectorTester(connector);
@@ -39,9 +44,9 @@ public class LogglyConnectorTest {
         is.add(new ByteArrayInputStream(inputString.getBytes()));
 
         tester.testExecuteCreateOperation(is, new ArrayList<SimpleOperationResult>());
-        */
 		
-		
+
+		/*
 		
 		String text = "<ns1:MembershipNumberRequest xmlns:ns1=\"http://www.boomi.com/v1b/AAA\"><ns1:State>CA</ns1:State></ns1:MembershipNumberRequest>";
 		System.out.println(text);
@@ -52,7 +57,8 @@ public class LogglyConnectorTest {
 
         InputStream data = new ByteArrayInputStream(jsonPrettyPrintString.getBytes());
         	
-        String theString = LogglyUtils.getStringFromInputStream(data);
+        String theString = LogglyUtils.getStringFromInputStream(data, null);
+        */
         
         
        // String retext = StreamUtil.toString(data, "UTF-8");

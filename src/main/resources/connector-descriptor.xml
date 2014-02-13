@@ -1,91 +1,100 @@
 <?xml version="1.0" encoding="US-ASCII"?>
-<GenericConnectorDescriptor
-    browsingType="any"
-    requireConnectionForBrowse="false">
-    <field id="token" label="Token" type="string">
-        <helpText>Your Loggly.com Access Token</helpText>
-        <defaultValue></defaultValue>
-    </field>
-    <field id="disable" label="Disable Logging" type="boolean">
-        <helpText>Disable all logging calls from this connector to Loggly.com</helpText>
-        <defaultValue>false</defaultValue>
-    </field>
-    <field id="tojson" label="XML to JSON?" type="boolean">
-        <helpText>Attempt to convert XML data to JSON. If "true", overrides operation settings.</helpText>
-        <defaultValue>false</defaultValue>
-    </field>
-    <field type="boolean" id="leveltag" label="Tag with log level?">
-    	<helpText>Use the current log level of the operation as a tag.</helpText>
-    	<defaultValue>true</defaultValue>
-    </field>
-    <field id="loglevel" label="Log Level" type="string">
-        <helpText>The logging level of this connector.</helpText>
-        <defaultValue>DEBUG</defaultValue>
-        <allowedValue label="DEBUG">
-        	<value>DEBUG</value>
-        </allowedValue>
-        <allowedValue label="INFO">
-        	<value>INFO</value>
-        </allowedValue>
-        <allowedValue label="WARN">
-        	<value>WARN</value>
-        </allowedValue>
-        <allowedValue label="ERROR">
-        	<value>ERROR</value>
-        </allowedValue>
-    </field>
-    <operation types="CREATE"> 
-	    <field id="sequence" label="Log Sequence" type="string">
-	        <helpText>Use this flag to add timing to the logs.</helpText>
-	        <defaultValue></defaultValue>
-	        <allowedValue label="START">
-	        	<value>START</value>
-	        </allowedValue>
-	        <allowedValue label="TICK">
-	        	<value>"TICK"</value>
-	        </allowedValue>
-	        <allowedValue label="END">
-	        	<value>END</value>
-	        </allowedValue>
-	        <allowedValue label="ERROR">
-	        	<value>ERROR</value>
-	        </allowedValue>
-	    </field>
-        <field id="tojson" label="To JSON" type="boolean">
-            <helpText>Attempt to convert XML data to JSON</helpText>
-            <defaultValue>false</defaultValue>
-        </field>
-        <field id="passthrough" label="Data Passthrough" type="boolean">
-            <helpText>Pass input data through connector in lieu of log request result.</helpText>
-            <defaultValue>true</defaultValue>
-        </field>  
-	    <field id="loglevel" label="Log Level" type="string">
-	        <helpText>The log level of this operation. If it is lower than the connection log level no logging will occur.</helpText>
-	        <defaultValue>DEBUG</defaultValue>
-	        <allowedValue label="DEBUG">
-	        	<value>DEBUG</value>
-	        </allowedValue>
-	        <allowedValue label="INFO">
-	        	<value>INFO</value>
-	        </allowedValue>
-	        <allowedValue label="WARN">
-	        	<value>WARN</value>
-	        </allowedValue>
-	        <allowedValue label="ERROR">
-	        	<value>ERROR</value>
-	        </allowedValue>
-	    </field>
-        <field id="tags" label="Tags" type="string">
-            <helpText>Comma separated list of tags for this entry.</helpText>
-            <defaultValue></defaultValue>
-        </field>
-        <field id="processproperties" label="Process Properties" type="string">
-            <helpText>Comma separated list of property=componentId:key values for this entry.</helpText>
-            <defaultValue></defaultValue>
-        </field>
-        <field id="dynamicproperties" label="Dynamic Process Properties" type="string">
-            <helpText>Comma separated list of dynamic properties for this entry.</helpText>
-            <defaultValue></defaultValue>
-        </field>
-    </operation>
+<GenericConnectorDescriptor browsingType="any"
+	requireConnectionForBrowse="false">
+	<field id="token" label="Token" type="string">
+		<helpText>Your Loggly.com Access Token</helpText>
+		<defaultValue></defaultValue>
+	</field>
+	<field id="disable" label="Disable Logging" type="boolean">
+		<helpText>Disable all logging calls from this connector to Loggly.com</helpText>
+		<defaultValue>false</defaultValue>
+	</field>
+	<field id="tojson" label="XML to JSON?" type="boolean">
+		<helpText>Attempt to convert XML data to JSON which can be parsed by Loggly.com. This allows metadata to be added to the logging request.</helpText>
+		<defaultValue>true</defaultValue>
+	</field>
+	<field type="boolean" id="leveltag" label="Tag with log level?">
+		<helpText>Use the current log level of the operation as a tag.</helpText>
+		<defaultValue>true</defaultValue>
+	</field>
+	<field id="loglevel" label="Log Level" type="string">
+		<helpText>The logging level of this connector.</helpText>
+		<defaultValue>DEBUG</defaultValue>
+		<allowedValue label="DEBUG">
+			<value>DEBUG</value>
+		</allowedValue>
+		<allowedValue label="INFO">
+			<value>INFO</value>
+		</allowedValue>
+		<allowedValue label="WARN">
+			<value>WARN</value>
+		</allowedValue>
+		<allowedValue label="ERROR">
+			<value>ERROR</value>
+		</allowedValue>
+	</field>
+	<field id="tags" label="Tags" type="string">
+		<helpText>Comma separated list of tags for entries which use this connection.</helpText>
+		<defaultValue></defaultValue>
+	</field>
+	<field id="processproperties" label="Process Properties" type="string">
+		<helpText>Comma separated list of property=componentId:key values for entries which use this connection.</helpText>
+		<defaultValue></defaultValue>
+	</field>
+	<field id="dynamicproperties" label="Dynamic Process Properties"
+		type="string">
+		<helpText>Comma separated list of dynamic property keys for entries which use this connection.</helpText>
+		<defaultValue></defaultValue>
+	</field>
+	<operation types="CREATE">
+		<field id="passthrough" label="Data Passthrough" type="boolean">
+			<helpText>Pass input data through connector in lieu of log request result.</helpText>
+			<defaultValue>true</defaultValue>
+		</field>
+		<field id="sequence" label="Log Sequence" type="string">
+			<helpText>Use this flag to add timing to the logs.</helpText>
+			<defaultValue></defaultValue>
+			<allowedValue label="START">
+				<value>START</value>
+			</allowedValue>
+			<allowedValue label="TICK">
+				<value>TICK</value>
+			</allowedValue>
+			<allowedValue label="END">
+				<value>END</value>
+			</allowedValue>
+			<allowedValue label="ERROR">
+				<value>ERROR</value>
+			</allowedValue>
+		</field>
+		<field id="loglevel" label="Log Level" type="string">
+			<helpText>The log level of this operation. If it is lower than the connection log level no logging will occur.</helpText>
+			<defaultValue>DEBUG</defaultValue>
+			<allowedValue label="DEBUG">
+				<value>DEBUG</value>
+			</allowedValue>
+			<allowedValue label="INFO">
+				<value>INFO</value>
+			</allowedValue>
+			<allowedValue label="WARN">
+				<value>WARN</value>
+			</allowedValue>
+			<allowedValue label="ERROR">
+				<value>ERROR</value>
+			</allowedValue>
+		</field>
+		<field id="tags" label="Tags" type="string">
+			<helpText>Comma separated list of tags for this entry.</helpText>
+			<defaultValue></defaultValue>
+		</field>
+		<field id="processproperties" label="Process Properties" type="string">
+			<helpText>Comma separated list of property=componentId:key values for this entry.</helpText>
+			<defaultValue></defaultValue>
+		</field>
+		<field id="dynamicproperties" label="Dynamic Process Properties"
+			type="string">
+			<helpText>Comma separated list of dynamic property keys for this entry.</helpText>
+			<defaultValue></defaultValue>
+		</field>
+	</operation>
 </GenericConnectorDescriptor>

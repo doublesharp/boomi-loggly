@@ -17,12 +17,16 @@ public class LogglyConnection extends BaseConnection {
 	protected static final String LEVELTAG_PROPERTY = "leveltag";
 	protected static final String LOGLEVEL_PROPERTY = "loglevel";
 	protected static final String TOJSON_PROPERTY = "tojson";
+	protected static final String TAGS_PROPERTY = "tags";
+	protected static final String PROCESS_PROPERTIES_PROPERTY = "processproperties";
+	protected static final String DYNAMIC_PROPERTIES_PROPERTY = "dynamicproperties";
 
 	// default values for the properties
 	private static final boolean DEFAULT_DISABLE = false;
 	private static final boolean DEFAULT_LEVELTAG = true;
 	private static final String DEFAULT_LOGLEVEL = LogglyUtils.DEBUG;
 	private static final boolean DEFAULT_TOJSON = false;
+	private static final String DEFAULT_PROPERTIES = "";
 
 	// instance variables for this connection
     protected final String _token;
@@ -31,6 +35,9 @@ public class LogglyConnection extends BaseConnection {
 	protected final boolean _toJson;
 	protected final boolean _levelTag;
 	protected final String _logLevel;
+	protected final String _tags;
+	protected final String _processProperties;
+	protected final String _dynamicProperties;
 
 	// construct a new instance
 	public LogglyConnection(BrowseContext context) {
@@ -44,5 +51,8 @@ public class LogglyConnection extends BaseConnection {
 		_levelTag = props.getBooleanProperty(LEVELTAG_PROPERTY, DEFAULT_LEVELTAG);
 		_logLevel = props.getProperty(LOGLEVEL_PROPERTY, DEFAULT_LOGLEVEL);
 		_toJson = props.getBooleanProperty(TOJSON_PROPERTY, DEFAULT_TOJSON);
+		_tags = props.getProperty(TAGS_PROPERTY, DEFAULT_PROPERTIES);
+		_processProperties = props.getProperty(PROCESS_PROPERTIES_PROPERTY, DEFAULT_PROPERTIES);
+		_dynamicProperties = props.getProperty(DYNAMIC_PROPERTIES_PROPERTY, DEFAULT_PROPERTIES);
 	}
 }
