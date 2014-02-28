@@ -18,7 +18,6 @@ import com.boomi.connector.testutil.SimpleOperationResult;
 @RunWith(JUnit4.class)
 public class LogglyConnectorTest {
 
-	@SuppressWarnings("unused")
 	@Test
     public void testCreateOperation() throws Exception
     {

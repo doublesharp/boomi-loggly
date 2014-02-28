@@ -17,6 +17,12 @@ public class LogglyResponse {
 		_responseCode = 0;
 		_responseMsg = null;
 	}
+	
+	public LogglyResponse(int errorCode, String message) {
+		_conn = null;
+		_responseCode = errorCode;
+		_responseMsg = message;
+	}
 
 	public LogglyResponse(HttpURLConnection conn) throws IOException {
 		_conn = conn;
@@ -25,14 +31,18 @@ public class LogglyResponse {
 	}
 
 	public InputStream getResponse() throws IOException {
-		try {
-			return _conn.getInputStream();
-		} catch (IOException e) {
-			if (OperationStatus.SUCCESS == getStatus()) {
-				// bummer, that's not good
-				throw e;
+		if (_conn!=null){
+			try {
+				return _conn.getInputStream();
+			} catch (IOException e) {
+				if (OperationStatus.SUCCESS == getStatus()) {
+					// bummer, that's not good
+					throw e;
+				}
+				return _conn.getErrorStream();
 			}
-			return _conn.getErrorStream();
+		} else {
+			return null;
 		}
 	}
 

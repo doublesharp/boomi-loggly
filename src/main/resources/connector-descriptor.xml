@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <GenericConnectorDescriptor browsingType="any"
 	requireConnectionForBrowse="false">
+	<field id="url" label="Loggly URL" type="string">
+		<helpText>Loggly.com API URL</helpText>
+		<defaultValue>https://logs-01.loggly.com/inputs/</defaultValue>
+	</field>
 	<field id="token" label="Token" type="string">
 		<helpText>Your Loggly.com Access Token</helpText>
 		<defaultValue></defaultValue>
@@ -33,17 +37,16 @@
 			<value>ERROR</value>
 		</allowedValue>
 	</field>
+	<field id="timeout" label="Logging Timeout Millis" type="integer">
+		<helpText>Max timeout for each logging request.</helpText>
+		<defaultValue>2500</defaultValue>
+	</field>
 	<field id="tags" label="Tags" type="string">
 		<helpText>Comma separated list of tags for entries which use this connection.</helpText>
 		<defaultValue></defaultValue>
 	</field>
 	<field id="processproperties" label="Process Properties" type="string">
-		<helpText>Comma separated list of property=componentId:key values for entries which use this connection.</helpText>
-		<defaultValue></defaultValue>
-	</field>
-	<field id="dynamicproperties" label="Dynamic Process Properties"
-		type="string">
-		<helpText>Comma separated list of dynamic property keys for entries which use this connection.</helpText>
+		<helpText>Comma separated list of property=componentId:key values for entries which use this connection. They "property" value can be referenced in operations.</helpText>
 		<defaultValue></defaultValue>
 	</field>
 	<operation types="CREATE">
@@ -88,7 +91,7 @@
 			<defaultValue></defaultValue>
 		</field>
 		<field id="processproperties" label="Process Properties" type="string">
-			<helpText>Comma separated list of property=componentId:key values for this entry.</helpText>
+			<helpText>Comma separated list of property=componentId:key values or mapped property values from the connector for this entry.</helpText>
 			<defaultValue></defaultValue>
 		</field>
 		<field id="dynamicproperties" label="Dynamic Process Properties"

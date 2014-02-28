@@ -50,9 +50,9 @@ public abstract class LogglyUtils {
 		return URLUtil.makeUrl(params, (Object[]) components);
 	}
 
-	public static HttpURLConnection send(URL url, String requestMethod, String contentType, InputStream data, String tags) throws IOException {
+	public static HttpURLConnection send(URL url, String requestMethod, String contentType, InputStream data, String tags, int timeoutMillis) throws IOException {
 		try {
-			HttpURLConnection conn = prepareSend(url, requestMethod, contentType, tags);
+			HttpURLConnection conn = prepareSend(url, requestMethod, contentType, tags, timeoutMillis);
 
 			OutputStream out = conn.getOutputStream();
 			try {
@@ -67,13 +67,15 @@ public abstract class LogglyUtils {
 		}
 	}
 
-	private static HttpURLConnection prepareSend(URL url, String requestMethod, String contentType, String tags) throws IOException {
+	private static HttpURLConnection prepareSend(URL url, String requestMethod, String contentType, String tags, int timeoutMillis) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod(requestMethod);
 		conn.setDoOutput(true);
 		conn.setDoInput(true);
 		conn.setRequestProperty(CONTENT_TYPE_HEADER, contentType);
 		conn.setRequestProperty(X_LOGGLY_TAG_HEADER, tags);
+		conn.setConnectTimeout(timeoutMillis);
+		conn.setReadTimeout(timeoutMillis);
 		return conn;
 	}
 
